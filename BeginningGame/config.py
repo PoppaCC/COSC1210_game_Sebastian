@@ -26,6 +26,6 @@ BOX_COLOR = (225,153,100)
 FPS = 60
 
 # --- Player appearance ---
-PLAYER_IMAGE_PATH = "./goose.png"  # transparent PNG, e.g. 48x48
+PLAYER_IMAGE_PATH = "./Tree.png"         # transparent PNG, e.g. 48x48
 PLAYER_IMAGE_SIZE = (48, 48)             # w, h in pixels
 PLAYER_RADIUS = 24                       # half of width; used by your collision
