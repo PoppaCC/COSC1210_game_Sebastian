@@ -2,6 +2,7 @@
 import os
 import pygame
 import Configure_The_Simulation as config
+import random
 
 def draw_room(screen, row, col):
     left = col * config.ROOM_WIDTH
@@ -32,12 +33,12 @@ def draw_room(screen, row, col):
         pygame.draw.line(screen, config.WALL_COLOR, (left, top), (left, mid_y - config.DOOR_SIZE // 2), config.WALL_THICK)
         pygame.draw.line(screen, config.WALL_COLOR, (left, mid_y + config.DOOR_SIZE // 2), (left, bottom), config.WALL_THICK)
 
-    # Right wall
-    #if col == config.GRID_COLS - 1:
-        #pygame.draw.line(screen, config.WALL_COLOR, (right, top), (right, bottom), config.WALL_THICK)
-    #else:
-        #pygame.draw.line(screen, config.WALL_COLOR, (right, top), (right, mid_y - config.DOOR_SIZE // 2), config.WALL_THICK)
-        #pygame.draw.line(screen, config.WALL_COLOR, (right, mid_y + config.DOOR_SIZE // 2), (right, bottom), config.WALL_THICK)
+     #Right wall
+    if col == config.GRID_COLS - 1:
+        pygame.draw.line(screen, config.WALL_COLOR, (right, top), (right, bottom), config.WALL_THICK)
+    else:
+        pygame.draw.line(screen, config.WALL_COLOR, (right, top), (right, mid_y - config.DOOR_SIZE // 2), config.WALL_THICK)
+        pygame.draw.line(screen, config.WALL_COLOR, (right, mid_y + config.DOOR_SIZE // 2), (right, bottom), config.WALL_THICK)
     #Puter
     #pygame.draw.rect(screen, (0, 255, 0), (left + 40, top + 40, 40, 30))  # Example computer rectangle
 
@@ -66,16 +67,16 @@ def is_blocked(x, y):
 
             if left <= x <= right and top <= y <= bottom:
                 if x - config.PLAYER_RADIUS < left:
-                    #if col == 0 or not (mid_y - config.DOOR_SIZE//2 <= y <= mid_y + config.DOOR_SIZE//2):
+                    if col == 0 or not (mid_y - config.DOOR_SIZE//2 <= y <= mid_y + config.DOOR_SIZE//2):
                         return True
                 if x + config.PLAYER_RADIUS > right:
-                    #if col == config.GRID_COLS - 1 or not (mid_y - config.DOOR_SIZE//2 <= y <= mid_y + config.DOOR_SIZE//2):
+                    if col == config.GRID_COLS - 1 or not (mid_y - config.DOOR_SIZE//2 <= y <= mid_y + config.DOOR_SIZE//2):
                         return True
                 if y - config.PLAYER_RADIUS < top:
-                    #if row == 0 or not (mid_x - config.DOOR_SIZE//2 <= x <= mid_x + config.DOOR_SIZE//2):
+                    if row == 0 or not (mid_x - config.DOOR_SIZE//2 <= x <= mid_x + config.DOOR_SIZE//2):
                         return True
                 if y + config.PLAYER_RADIUS > bottom:
-                    #if row == config.GRID_ROWS - 1 or not (mid_x - config.DOOR_SIZE//2 <= x <= mid_x + config.DOOR_SIZE//2):
+                    if row == config.GRID_ROWS - 1 or not (mid_x - config.DOOR_SIZE//2 <= x <= mid_x + config.DOOR_SIZE//2):
                         return True
                 return False
 
@@ -173,15 +174,17 @@ def show_mini_game(screen):
                 waiting = False
 
 
-def mini_game(screen):
-    while show_mini_game() == True:
-        pygame.draw.line(screen, (255, 0, 0), (0, 0), (700, 700), 5)
+#def mini_game(screen):
+    #while show_mini_game(screen) == True:
+        #is_blocked() == False
+        #draw_player() == False
+
       
 
 
             
 def count_objectives(screen):
-    dict_objectives = {"objectives_left": 4}
+    #dict_objectives = {"objectives_left": 4}
     font = pygame.font.Font(None, 25)  # default font, large size
     objective_text = font.render("Objectives Left: 4", True, (255, 255, 255)) # Renders text in the game with (color) 
     ob_text_rect = objective_text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2)) #Center, defines where the center of the rectangle will lie and the second half finds the center of the game screen based on it's dimensions
@@ -196,11 +199,7 @@ def count_objectives(screen):
     screen.blit(objective_box_surface, objective_box_rect)
     screen.blit(objective_text, ob_text_rect)
     pygame.display.flip()
-
-    #if mini_game() == False:
-    #    dict_objectives["objectives_left"] -= 144
         
-
     waiting = True
     while waiting:
         keys = pygame.key.get_pressed()
@@ -210,4 +209,38 @@ def count_objectives(screen):
     
 
 
-        
+        '''# Enemy Systems    
+class Enemy:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.speed = 150
+        self.color = (255, 0, 0)
+        self.size = 24
+        self.direction = random.choice([(1, 0), (-1, 0), (0, 1), (0, -1)])
+        self.move = move
+
+    
+def spawn_enemies(num_enemies):
+    """Return a list of new enemies."""
+    enemies = []
+    for _ in range(num_enemies):
+        x = random.randint(10, config.WIDTH - 30)
+        y = random.randint(10, config.HEIGHT - 30)
+        enemies.append(Enemy(x, y))
+    return enemies
+
+def draw_enemy(self, screen):
+        pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.size)
+
+def move(self):
+        """Simple random bouncing movement."""
+        self.x += self.direction[0] * self.speed
+        self.y += self.direction[1] * self.speed
+
+        # Bounce off walls (stay inside screen)
+        if self.x < self.size or self.x > config.WIDTH - self.size:
+            self.direction = (-self.direction[0], self.direction[1])
+        if self.y < self.size or self.y > config.HEIGHT - self.size:
+            self.direction = (self.direction[0], -self.direction[1])
+'''
