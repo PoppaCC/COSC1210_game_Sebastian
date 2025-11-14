@@ -15,33 +15,32 @@ def draw_room(screen, row, col):
      #Top wall
     if row == 0:
         pygame.draw.line(screen, config.WALL_COLOR, (left, top), (right, top), config.WALL_THICK)
-    else:
-        pygame.draw.line(screen, config.WALL_COLOR, (left, top), (mid_x - config.DOOR_SIZE // 2, top), config.WALL_THICK)
-        pygame.draw.line(screen, config.WALL_COLOR, (mid_x + config.DOOR_SIZE // 2, top), (right, top), config.WALL_THICK)
+    #else:
+        #pygame.draw.line(screen, config.WALL_COLOR, (left, top), (mid_x - config.DOOR_SIZE // 2, top), config.WALL_THICK)
+        #pygame.draw.line(screen, config.WALL_COLOR, (mid_x + config.DOOR_SIZE // 2, top), (right, top), config.WALL_THICK)
 
     # Bottom wall
     if row == config.GRID_ROWS - 1:
         pygame.draw.line(screen, config.WALL_COLOR, (left, bottom), (right, bottom), config.WALL_THICK)
-    else:
-        pygame.draw.line(screen, config.WALL_COLOR, (left, bottom), (mid_x - config.DOOR_SIZE // 2, bottom), config.WALL_THICK)
-        pygame.draw.line(screen, config.WALL_COLOR, (mid_x + config.DOOR_SIZE // 2, bottom), (right, bottom), config.WALL_THICK)
+    #else:
+        #pygame.draw.line(screen, config.WALL_COLOR, (left, bottom), (mid_x - config.DOOR_SIZE // 2, bottom), config.WALL_THICK)
+        #pygame.draw.line(screen, config.WALL_COLOR, (mid_x + config.DOOR_SIZE // 2, bottom), (right, bottom), config.WALL_THICK)
 
     # Left wall
     if col == 0:
         pygame.draw.line(screen, config.WALL_COLOR, (left, top), (left, bottom), config.WALL_THICK)
-    else:
-        pygame.draw.line(screen, config.WALL_COLOR, (left, top), (left, mid_y - config.DOOR_SIZE // 2), config.WALL_THICK)
-        pygame.draw.line(screen, config.WALL_COLOR, (left, mid_y + config.DOOR_SIZE // 2), (left, bottom), config.WALL_THICK)
+    #else:
+        #pygame.draw.line(screen, config.WALL_COLOR, (left, top), (left, mid_y - config.DOOR_SIZE // 2), config.WALL_THICK)
+        #pygame.draw.line(screen, config.WALL_COLOR, (left, mid_y + config.DOOR_SIZE // 2), (left, bottom), config.WALL_THICK)
 
      #Right wall
     if col == config.GRID_COLS - 1:
         pygame.draw.line(screen, config.WALL_COLOR, (right, top), (right, bottom), config.WALL_THICK)
-    else:
-        pygame.draw.line(screen, config.WALL_COLOR, (right, top), (right, mid_y - config.DOOR_SIZE // 2), config.WALL_THICK)
-        pygame.draw.line(screen, config.WALL_COLOR, (right, mid_y + config.DOOR_SIZE // 2), (right, bottom), config.WALL_THICK)
+    #else:
+        #pygame.draw.line(screen, config.WALL_COLOR, (right, top), (right, mid_y - config.DOOR_SIZE // 2), config.WALL_THICK)
+        #pygame.draw.line(screen, config.WALL_COLOR, (right, mid_y + config.DOOR_SIZE // 2), (right, bottom), config.WALL_THICK)
     #Puter
     #pygame.draw.rect(screen, (0, 255, 0), (left + 40, top + 40, 40, 30))  # Example computer rectangle
-
 
 def computer_rect(screen):
     left = 30
@@ -55,8 +54,14 @@ def computer_rect(screen):
 
 
 def is_blocked(x, y):
+    if x - config.PLAYER_RADIUS < 0: return True
+    if x + config.PLAYER_RADIUS > config.WIDTH: return True
+    if y - config.PLAYER_RADIUS < 0: return True
+    if y + config.PLAYER_RADIUS > config.HEIGHT: return True
+    return False
+
     """Return True if the player is hitting a wall (excluding doors)"""
-    for row in range(config.GRID_ROWS):
+    '''for row in range(config.GRID_ROWS):
         for col in range(config.GRID_COLS):
             left = col * config.ROOM_WIDTH
             right = left + config.ROOM_WIDTH
@@ -80,20 +85,7 @@ def is_blocked(x, y):
                         return True
                 return False
 
-    return True
-
-
-'''def draw_obstacle(screen):
-
-    #draws a simple box
-    left = 10
-    top = 10
-    right = 20
-    bottom = 20
-    pygame.draw.line(screen, config.BOX_COLOR, (left, top), (right, top), config.Box_Thick)
-    pygame.draw.line(screen, config.BOX_COLOR, (left, bottom), (right, bottom), config.Box_Thick)
-    pygame.draw.line(screen, config.BOX_COLOR, (right, top), (right, bottom), config.Box_Thick)
-    pygame.draw.line(screen, config.BOX_COLOR, (left, top), (left, bottom), config.Box_Thick)'''
+    return True'''
 
 
 _player_image = None
