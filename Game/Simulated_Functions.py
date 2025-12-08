@@ -1,4 +1,4 @@
-# adventure_functions.py
+# Simulated_Functions.py
 import os
 import pygame
 import Configure_The_Simulation as config
@@ -12,7 +12,25 @@ IMG_DIR   = os.path.join(ASSETS_DIR, "Images")
 enemy_image_vertical = None
 enemy_image_horizontal = None
 
+def get_outer_walls():
+    """Return ONLY the outer boundary walls."""
+    return [
+        pygame.Rect(0, 0, config.WIDTH, config.wall_thickness),  # Top
+        pygame.Rect(0, config.HEIGHT - config.wall_thickness, config.WIDTH, config.wall_thickness),  # Bottom
+        pygame.Rect(0, 0, config.wall_thickness, config.HEIGHT),  # Left
+        pygame.Rect(config.WIDTH - config.wall_thickness, 0, config.wall_thickness, config.HEIGHT)  # Right
+    ]
 
+def get_default_inner_walls():
+    """Return ONLY the default inner walls (not including borders)."""
+    return [
+        pygame.Rect(80, 0, 20, 200),
+        pygame.Rect(200, 400, 20, 200),
+        pygame.Rect(320, 0, 20, 200),
+        pygame.Rect(440, 400, 20, 200),
+        pygame.Rect(400, 300, 200, 20),
+        pygame.Rect(0, 300, 200, 20)
+    ]
 
 def asset_path(*parts):
     """Build full path inside assets folder."""
@@ -20,7 +38,7 @@ def asset_path(*parts):
 
 
 def draw_layout(screen, wall_color, wall_thickness):
-    screen.fill((50, 50, 50))
+    """Return default walls WITHOUT drawing them."""
 
     walls = []
 
@@ -30,11 +48,8 @@ def draw_layout(screen, wall_color, wall_thickness):
     walls.append(pygame.Rect(0, 0, wall_thickness, config.HEIGHT))  # Left
     walls.append(pygame.Rect(config.WIDTH - wall_thickness, 0, wall_thickness, config.HEIGHT))  # Right
 
-    for w in walls:
-        pygame.draw.rect(screen, (100, 100, 100), w)
-
     # Inner walls
-    inner_walls = [
+    inner = [
         pygame.Rect(80, 0, 20, 200),
         pygame.Rect(200, 400, 20, 200),
         pygame.Rect(320, 0, 20, 200),
@@ -43,10 +58,8 @@ def draw_layout(screen, wall_color, wall_thickness):
         pygame.Rect(0, 300, 200, 20)
     ]
 
-    for w in inner_walls:
-        pygame.draw.rect(screen, config.wall_color, w)
-
-    return walls + inner_walls
+    walls.extend(inner)
+    return walls
 
 
 
@@ -235,22 +248,3 @@ class Enemy:
             enemy_image_horizontal = pygame.transform.smoothscale(img, size)
         else:
             print(f"[Warning] Horizontal enemy image not found: {horizontal_path}")
-
-    
-    def load_level(level_index):
-        level_data = LEVELS[level_index]
-    
-        # Place computer
-        computer_rect_pos = pygame.Rect(*level_data["computer_pos"], 40, 40)
-    
-        # Create enemies
-        enemies = []
-        for e in level_data["enemies"]:
-            enemies.append(Enemy(e["x"], e["y"], movement=e["movement"], speed=e["speed"]))
-    
-        # Walls
-        walls = draw_layout(screen, config.wall_color, config.wall_thickness)
-        if level_data.get("walls"):
-            walls += level_data["walls"]
-    
-        return computer_rect_pos, enemies, walls
