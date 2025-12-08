@@ -24,11 +24,12 @@ BOX_COLOR = (194,194,194)
 # Frames Per Second
 FPS = 60
 
-# --- Player appearance ---
+# Player appearance 
 PLAYER_IMAGE_PATH = asset_path("Images", "Character2.png.png")        # transparent PNG, e.g. 48x48
 PLAYER_IMAGE_SIZE = (55, 55)             # w, h in pixels
 PLAYER_RADIUS = 24                       # half of width; used by your collision
 
 # Player Health and Objectives
-MAX_HEALTH = {100}
-TOTAL_OBJECTIVES = {4}
+MAX_HEALTH = {3}
+Objectives_left = 4
+

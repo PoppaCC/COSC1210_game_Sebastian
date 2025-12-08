@@ -9,25 +9,40 @@ ASSETS_DIR = os.path.join(BASE_DIR, "Assets")
 MUSIC_DIR = os.path.join(ASSETS_DIR, "Music")
 IMG_DIR   = os.path.join(ASSETS_DIR, "Images")
 
+
 def asset_path(*parts):
     """Build full path inside assets folder."""
     return os.path.join(ASSETS_DIR, *parts)
 
 
 def draw_layout(screen, wall_color, wall_thickness):
-    # Draw the layout of the room with walls and obstacles
-    screen.fill((50, 50, 50))  # Fill background with dark gray
+    screen.fill((50, 50, 50))
 
-    # Draw walls
-    pygame.draw.rect(screen, (100, 100, 100), pygame.Rect(0, 0, config.WIDTH, wall_thickness))  # Top wall
-    pygame.draw.rect(screen, (100, 100, 100), pygame.Rect(0, config.HEIGHT - wall_thickness, config.WIDTH, wall_thickness))  # Bottom wall
-    pygame.draw.rect(screen, (100, 100, 100), pygame.Rect(0, 0, wall_thickness, config.HEIGHT))  # Left wall
-    pygame.draw.rect(screen, (100, 100, 100), pygame.Rect(config.WIDTH - wall_thickness, 0, wall_thickness, config.HEIGHT))  # Right wall
+    walls = []
 
-#INNER OBSTACLES
-    # 4. Left side pillar
-    wall_1_rect = pygame.draw.rect(screen, config.wall_color, pygame.Rect(80, 0, 20, 200))
+    # Outer walls
+    walls.append(pygame.Rect(0, 0, config.WIDTH, wall_thickness))  # Top
+    walls.append(pygame.Rect(0, config.HEIGHT - wall_thickness, config.WIDTH, wall_thickness))  # Bottom
+    walls.append(pygame.Rect(0, 0, wall_thickness, config.HEIGHT))  # Left
+    walls.append(pygame.Rect(config.WIDTH - wall_thickness, 0, wall_thickness, config.HEIGHT))  # Right
 
+    for w in walls:
+        pygame.draw.rect(screen, (100, 100, 100), w)
+
+    # Inner walls
+    inner_walls = [
+        pygame.Rect(80, 0, 20, 200),
+        pygame.Rect(200, 400, 20, 200),
+        pygame.Rect(320, 0, 20, 200),
+        pygame.Rect(440, 400, 20, 200),
+        pygame.Rect(400, 300, 200, 20),
+        pygame.Rect(0, 300, 200, 20)
+    ]
+
+    for w in inner_walls:
+        pygame.draw.rect(screen, config.wall_color, w)
+
+    return walls + inner_walls
 
 
 
@@ -78,15 +93,22 @@ def load_player_image():
             _warned_once = True
 
 def draw_player(screen, x, y):
-    """Draw sprite centered at (x, y); fall back to circle if no image."""
+    """Draw sprite centered at (x, y); returns player rect for collision."""
     if _player_image:
-        player_rect = _player_image.get_rect(center=(int(x), int(y)))
-        screen.blit(_player_image, player_rect.topleft)
-        return player_rect
-    else:
-        pygame.draw.circle(screen, config.PLAYER_COLOR, (int(x), int(y)), config.PLAYER_RADIUS)
-        pygame.draw.circle(screen, (0, 0, 0), (int(x), int(y)), config.PLAYER_RADIUS, 2)
-        return player_rect
+        rect = _player_image.get_rect(center=(int(x), int(y)))
+        screen.blit(_player_image, rect)
+        return rect
+
+    # fallback circle with rect
+    rect = pygame.Rect(
+        int(x - config.PLAYER_RADIUS),
+        int(y - config.PLAYER_RADIUS),
+        config.PLAYER_RADIUS * 2,
+        config.PLAYER_RADIUS * 2
+    )
+    pygame.draw.circle(screen, config.PLAYER_COLOR, rect.center, config.PLAYER_RADIUS)
+    pygame.draw.circle(screen, (0, 0, 0), rect.center, config.PLAYER_RADIUS, 2)
+    return rect
 
 def show_game_over(screen):
     """Draw a Game Over box in the center of the screen."""
@@ -132,20 +154,11 @@ def show_mini_game(screen):
             if event.type == pygame.QUIT or pygame.KEYDOWN: # Waits for a key press to exit the mini-game screen.
                 waiting = False
 
-
-#def mini_game(screen):
-    #while show_mini_game(screen) == True:
-        #is_blocked() == False
-        #draw_player() == False
-
-      
-
-
             
 def count_objectives(screen):
     #dict_objectives = {"objectives_left": 4}
     font = pygame.font.Font(None, 25)  # default font, large size
-    objective_text = font.render("Objectives Left: 4", True, (255, 255, 255)) # Renders text in the game with (color) 
+    objective_text = font.render("Computers Left: 4", True, (255, 255, 255)) # Renders text in the game with (color) 
     ob_text_rect = objective_text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2)) #Center, defines where the center of the rectangle will lie and the second half finds the center of the game screen based on it's dimensions
 
     objective_box_width = ob_text_rect.width + 40 
@@ -166,40 +179,22 @@ def count_objectives(screen):
             if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
                 waiting = False
     
-
-
-        '''# Enemy Systems    
 class Enemy:
-    def __init__(self, x, y):
+    def __init__(self, x, y, speed=120, size=20):
         self.x = x
         self.y = y
-        self.speed = 150
-        self.color = (255, 0, 0)
-        self.size = 24
-        self.direction = random.choice([(1, 0), (-1, 0), (0, 1), (0, -1)])
-        self.move = move
+        self.speed = speed
+        self.size = size
+        self.direction = 1  # 1 = down, -1 = up
 
-    
-def spawn_enemies(num_enemies):
-    """Return a list of new enemies."""
-    enemies = []
-    for _ in range(num_enemies):
-        x = random.randint(10, config.WIDTH - 30)
-        y = random.randint(10, config.HEIGHT - 30)
-        enemies.append(Enemy(x, y))
-    return enemies
+def enemy_move(self, dt):
+        """Move up and down, bounce when hitting limits."""
+        self.y += self.direction * self.speed * dt
 
-def draw_enemy(self, screen):
-        pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.size)
-
-def move(self):
-        """Simple random bouncing movement."""
-        self.x += self.direction[0] * self.speed
-        self.y += self.direction[1] * self.speed
-
-        # Bounce off walls (stay inside screen)
-        if self.x < self.size or self.x > config.WIDTH - self.size:
-            self.direction = (-self.direction[0], self.direction[1])
-        if self.y < self.size or self.y > config.HEIGHT - self.size:
-            self.direction = (self.direction[0], -self.direction[1])
-'''
+        # Bounce at top/bottom boundaries
+        if self.y < self.size:
+            self.y = self.size
+            self.direction = 1
+        elif self.y > config.HEIGHT - self.size:
+            self.y = config.HEIGHT - self.size
+            self.direction = -1
