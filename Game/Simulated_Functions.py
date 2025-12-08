@@ -9,6 +9,10 @@ ASSETS_DIR = os.path.join(BASE_DIR, "Assets")
 MUSIC_DIR = os.path.join(ASSETS_DIR, "Music")
 IMG_DIR   = os.path.join(ASSETS_DIR, "Images")
 
+enemy_image_vertical = None
+enemy_image_horizontal = None
+
+
 
 def asset_path(*parts):
     """Build full path inside assets folder."""
@@ -155,23 +159,22 @@ def show_mini_game(screen):
                 waiting = False
 
             
-def count_objectives(screen):
-    #dict_objectives = {"objectives_left": 4}
-    font = pygame.font.Font(None, 25)  # default font, large size
-    objective_text = font.render("Computers Left: 4", True, (255, 255, 255)) # Renders text in the game with (color) 
-    ob_text_rect = objective_text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2)) #Center, defines where the center of the rectangle will lie and the second half finds the center of the game screen based on it's dimensions
+def count_objectives(screen, remaining):
+    font = pygame.font.Font(None, 25)
+    objective_text = font.render(f"Computers Left: {remaining}", True, (255, 255, 255))
+    ob_text_rect = objective_text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2))
 
-    objective_box_width = ob_text_rect.width + 40 
-    objective_box_height = ob_text_rect.height + 40
-    objective_box_surface = pygame.Surface((objective_box_width, objective_box_height))
-    objective_box_surface.set_alpha(180)
-    objective_box_surface.fill((0, 0, 0))
-    objective_box_rect = objective_box_surface.get_rect(center=ob_text_rect.center)
+    box_width = ob_text_rect.width + 40
+    box_height = ob_text_rect.height + 40
+    box_surface = pygame.Surface((box_width, box_height))
+    box_surface.set_alpha(180)
+    box_surface.fill((0, 0, 0))
+    box_rect = box_surface.get_rect(center=ob_text_rect.center)
 
-    screen.blit(objective_box_surface, objective_box_rect)
+    screen.blit(box_surface, box_rect)
     screen.blit(objective_text, ob_text_rect)
     pygame.display.flip()
-        
+
     waiting = True
     while waiting:
         keys = pygame.key.get_pressed()
@@ -180,21 +183,74 @@ def count_objectives(screen):
                 waiting = False
     
 class Enemy:
-    def __init__(self, x, y, speed=120, size=20):
+    def __init__(self, x, y, movement="vertical", speed=200, size=(55,55)):
         self.x = x
         self.y = y
         self.speed = speed
         self.size = size
-        self.direction = 1  # 1 = down, -1 = up
+        self.axis = movement           # "vertical" or "horizontal"
+        self.sprite_axis = movement    # used for image selection
+        self.direction = 1             # 1 or -1
 
-def enemy_move(self, dt):
-        """Move up and down, bounce when hitting limits."""
-        self.y += self.direction * self.speed * dt
+    def update(self, dt, walls):
+        """Move enemy along its axis and reverse if hitting walls."""
+        if self.axis == "vertical":
+            new_y = self.y + self.speed * self.direction * dt
+            future = pygame.Rect(self.x, new_y, self.size[0], self.size[1])
+            if any(future.colliderect(w) for w in walls):
+                self.direction *= -1
+            else:
+                self.y = new_y
+        else:  # horizontal
+            new_x = self.x + self.speed * self.direction * dt
+            future = pygame.Rect(new_x, self.y, self.size[0], self.size[1])
+            if any(future.colliderect(w) for w in walls):
+                self.direction *= -1
+            else:
+                self.x = new_x
 
-        # Bounce at top/bottom boundaries
-        if self.y < self.size:
-            self.y = self.size
-            self.direction = 1
-        elif self.y > config.HEIGHT - self.size:
-            self.y = config.HEIGHT - self.size
-            self.direction = -1
+    def draw(self, screen):
+        """Draw enemy using its image or fallback rectangle."""
+        global enemy_image_vertical, enemy_image_horizontal
+        if self.sprite_axis == "vertical" and enemy_image_vertical:
+            screen.blit(enemy_image_vertical, (self.x, self.y))
+        elif self.sprite_axis == "horizontal" and enemy_image_horizontal:
+            screen.blit(enemy_image_horizontal, (self.x, self.y))
+        else:
+            pygame.draw.rect(screen, (255, 50, 50), pygame.Rect(self.x, self.y, self.size[0], self.size[1]))
+
+    @staticmethod
+    def load_images(vertical_path, horizontal_path, size):
+        """Load enemy images safely."""
+        global enemy_image_vertical, enemy_image_horizontal
+
+        if os.path.exists(vertical_path):
+            img = pygame.image.load(vertical_path).convert_alpha()
+            enemy_image_vertical = pygame.transform.smoothscale(img, size)
+        else:
+            print(f"[Warning] Vertical enemy image not found: {vertical_path}")
+
+        if os.path.exists(horizontal_path):
+            img = pygame.image.load(horizontal_path).convert_alpha()
+            enemy_image_horizontal = pygame.transform.smoothscale(img, size)
+        else:
+            print(f"[Warning] Horizontal enemy image not found: {horizontal_path}")
+
+    
+    def load_level(level_index):
+        level_data = LEVELS[level_index]
+    
+        # Place computer
+        computer_rect_pos = pygame.Rect(*level_data["computer_pos"], 40, 40)
+    
+        # Create enemies
+        enemies = []
+        for e in level_data["enemies"]:
+            enemies.append(Enemy(e["x"], e["y"], movement=e["movement"], speed=e["speed"]))
+    
+        # Walls
+        walls = draw_layout(screen, config.wall_color, config.wall_thickness)
+        if level_data.get("walls"):
+            walls += level_data["walls"]
+    
+        return computer_rect_pos, enemies, walls

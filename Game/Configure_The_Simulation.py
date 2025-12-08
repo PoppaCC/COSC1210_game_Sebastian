@@ -31,5 +31,9 @@ PLAYER_RADIUS = 24                       # half of width; used by your collision
 
 # Player Health and Objectives
 MAX_HEALTH = {3}
-Objectives_left = 4
+computers_left = 4
 
+# Enemy apperance
+enemy_image_vertical = asset_path("Images", "Game Enemy - Bug - Upwards.png.png")
+enemy_image_horizontal = asset_path("Images", "Game Enemy - Bug - Rightwards.png.png")
+enemy_image_size = (55, 55)
