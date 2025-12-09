@@ -17,7 +17,7 @@ WIDTH = ROOM_WIDTH
 HEIGHT = ROOM_HEIGHT
 
 # Colors (R, G, B)
-BG_COLOR = (119, 85, 138)
+BG_COLOR = (30, 30, 30)
 PLAYER_COLOR = (100, 200, 255)
 BOX_COLOR = (194,194,194)
 
@@ -27,7 +27,7 @@ FPS = 60
 # Player appearance 
 PLAYER_IMAGE_PATH = asset_path("Images", "Character2.png.png")        # transparent PNG, e.g. 48x48
 PLAYER_IMAGE_SIZE = (55, 55)             # w, h in pixels
-PLAYER_RADIUS = 24                       # half of width; used by your collision
+PLAYER_RADIUS = 20                       # half of width; used by your collision
 
 # Player Health and Objectives
 MAX_HEALTH = {3}
