@@ -139,7 +139,6 @@ def show_game_over(screen):
 
             
 def count_objectives(screen, remaining):
-    """Show remaining objectives and wait for ESC safely."""
     font = pygame.font.Font(None, 25)
     objective_text = font.render(f"Computers Left: {remaining}", True, (255, 255, 255))
     ob_text_rect = objective_text.get_rect(center=(config.WIDTH // 2, config.HEIGHT // 2))
@@ -248,7 +247,6 @@ def show_escape_message(screen):
     screen.blit(text, text_rect)
     pygame.display.flip()
 
-    # **Wait for ESC, but keep processing events properly**
     esc_pressed = False
     while not esc_pressed:
         for event in pygame.event.get():
@@ -257,4 +255,4 @@ def show_escape_message(screen):
                 return
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 esc_pressed = True
-        pygame.time.wait(10)  # tiny delay to prevent 100% CPU
+        pygame.time.wait(10)
