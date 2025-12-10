@@ -2,7 +2,7 @@
 Escape the Simulation
 In this game you are attempting to escape the simulation by deactivating computers and avoiding enemies. Deactivate 4 computers without hitting an enemy and you will be freed from the simulation.
 Run The_Simulation.ipynb
-Esc to close objective counter, Arrow keys to move around, Esc to close the game.
+Esc to close objective counter, Arrow keys to move around, Esc to close the game, Upon completing a level immediately double click Esc to proceed.
 
 ├── /The_Simulation/
 │   └── The_Simulation.ipynb
